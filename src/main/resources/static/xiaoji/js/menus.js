@@ -393,8 +393,4 @@ $(function () {
 	  "</div>" +
 	"</footer>"));
     
-    if ($("script[src='/abi/xiaoji/js/stepguides.js']").length == 0) {
-      $.getScript('/abi/xiaoji/js/stepguides.js');
-    }
-    
 });
