@@ -1,0 +1,14 @@
+{
+  "roles": [
+    {"role": "Manager"},
+    {"role": "Normal", "default": "true"}
+  ],
+  "paths": [
+    {
+      "path": "/index",
+      "grants": [
+        {"role": "Manager"}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="zh-cmn-Hans">
+<head>
+<!-- Required meta tags -->
+<meta charset="utf-8">
+<meta name="viewport"
+  content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+<!-- Bootstrap CSS -->
+<link rel="stylesheet" href="/aad/static/bootstrap/css/bootstrap.min.css"
+  integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+  crossorigin="anonymous">
+<link rel="stylesheet" href="/aad/static/css/docs.min.css">
+<title>短应用&trade; 菜单</title>
+</head>
+<body>
+<input type="hidden" id="username" name="username" value="短应用">
+<div class="container-fluid">
+  <div class="row">
+   <div class="col-12 col-md-9">
+    <p></p>
+    <div class="container-fluid">
+     <div class="row menu-all">
+      <table class="table table-sm table-hover table-striped">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">菜单名称</th>
+            <th scope="col">父菜单</th>
+            <th scope="col">菜单动作</th>
+            <th scope="col">排序</th>
+          </tr>
+        </thead>
+        <tbody>
+
+        </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <!-- 右边添加菜单 -->
+   <div class="col-12 col-md-3">
+       <p></p>
+       <form class="menuForm">
+           <input type="hidden" id="unionId" name="unionId">
+           <input type="hidden" id="subdomain" name="subdomain">
+           <div class="form-group">
+               <label for="menuParentId">父菜单编号</label>
+               <input type="text" class="form-control form-control-sm" id="menuParentId" name="menuParentId"
+                      aria-describedby="nameHelp" placeholder="例如：1,2,3...数字序号">
+               <small class="form-text text-muted">请使用填写上一级菜单的数字序号，第一级菜单的父菜单编号可使用0替代.</small>
+           </div>
+           <div class="form-group">
+               <label for="menuId">菜单编号</label>
+               <input type="text" class="form-control form-control-sm" id="menuId" name="menuId"
+                      aria-describedby="nameHelp" placeholder="例如：1,2,3...数字序号">
+               <small class="form-text text-muted">请使用未使用过的数字序号.</small>
+           </div>
+           <div class="form-group">
+               <label for="menuName">菜单名称</label>
+               <input type="text" class="form-control form-control-sm" id="menuName" name="menuName"
+                      aria-describedby="prefixHelp" placeholder="例如：菜单管理">
+               <small class="form-text text-muted">请使用简单易懂的中文短语描述此菜单项对应的功能.</small>
+           </div>
+           <div class="form-group">
+               <label for="menuAction">菜单动作</label>
+               <textarea class="form-control" id="menuAction" rows="3" name="menuAction"></textarea>
+           </div>
+           <div class="form-group">
+               <label for="menuOrder">菜单排序</label>
+               <input type="text" class="form-control form-control-sm" id="menuOrder" name="menuOrder"
+                      aria-describedby="nameHelp" placeholder="例如：1,2,3...数字序号">
+               <small class="form-text text-muted">请使用数字的大小来确定菜单的位置.</small>
+           </div>
+           <button type="button" id="menuSave" class="btn btn-primary">保存</button>
+           <button type="button" id="menuDelete" class="btn btn-link">删除</button>
+       </form>
+   </div>
+  </div>
+</div>
+  <p></p>
+  <!-- Optional JavaScript -->
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="/aad/static/jquery/js/jquery-3.3.1.slim.min.js"
+    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+    crossorigin="anonymous"></script>
+  <script src="/aad/static/jquery/js/jquery.min.js"></script>
+  <script src="/aad/static/jquery/js/popper.min.js"
+    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+    crossorigin="anonymous"></script>
+  <script src="/aad/static/bootstrap/js/bootstrap.min.js"
+    integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+    crossorigin="anonymous"></script>
+  <script src="/aad/static/js/holder.min.js"></script>
+  <script src="/aad/static/xiaoji/js/menus.js"></script>
+  <script type="text/javascript">
+  var subdomain = window.location.host.split('.', 1)[0];
+  $(function() {
+    var editmenu = function() {
+      console.log($(this));
+        $("form.menuForm > input#unionId").val($(this).find("#unionId").val());
+        $("form.menuForm input#menuId").val($(this).find("#menuId").text());
+        $("form.menuForm input#menuName").val($(this).find("#menuName").text());
+        $("form.menuForm input#menuParentId").val($(this).find("#menuParentId").text());
+        $("form.menuForm textarea#menuAction").val($(this).find("#menuAction").text());
+        $("form.menuForm input#menuOrder").val($(this).find("#menuOrder").text());
+    }
+    
+    var loadmenus = function() {
+     $.ajax({
+         url: window.location.protocol + "//" + window.location.host + "/aad/menus/" + subdomain + "/list",
+         type: "post",
+         data: "",
+         dataType: "json",
+         success: function(resp) {
+           console.log(resp);
+           if (resp.data != 'undefined' && !$.isEmptyObject(resp.data)) {
+               $("div.menu-all > table > tbody").empty();
+               $.each(resp.data, function(i, n) {
+                   var line = $("<tr>" +
+                             "<input type='hidden' id='unionId' value='" + n.unionId + "'>" +
+                             "<th id='menuId' scope=\"row\">" + n.menuId + "</th>" +
+                             "<td id='menuName'>" + n.menuName + "</td>" +
+                             "<td id='menuParentId'>" + n.menuParentId + "</td>" +
+                             "<td id='menuAction'>" + n.menuAction + "</td>" +
+                             "<td id='menuOrder'>" + n.menuOrder + "</td>" +
+                       "</tr>");
+                   line.on("click", editmenu);
+                   $("div.menu-all > table > tbody").append(line);
+                 });
+           }
+         },
+         error: function(resp) {
+           console.log(resp);
+         }
+     });
+    }
+    
+    $("form.menuForm input#menuId").change(function() {
+      $("form.menuForm > input#unionId").val("");
+    });
+    
+    $("#menuDelete").on("click", function() {
+         var unionId = $("form.menuForm > input#unionId").val();
+         
+         if (unionId != 'undefined' && unionId != null && unionId != '') {
+           $.ajax({
+               url: window.location.protocol + "//" + window.location.host + "/aad/menus/" + subdomain + "/" + unionId + "/delete",
+               type: "post",
+               data: "",
+               dataType: "json",
+               contentType: "application/json;charset=UTF-8",
+               success: function(resp) {
+                 console.log(resp);
+                 loadmenus();
+               },
+               error: function(resp) {
+                 console.log(resp);
+               }
+           });
+         }
+    });
+    
+    $("#menuSave").on("click", function() {
+      var menu = {
+                 unionId: $("form.menuForm > input#unionId").val(),
+                 subdomain: subdomain,
+                 menuParentId: $("form.menuForm input#menuParentId").val(),
+                 menuId: $("form.menuForm input#menuId").val(),
+                 menuName: $("form.menuForm input#menuName").val(),
+                 menuAction: $("form.menuForm textarea#menuAction").val(),
+                 menuOrder: $("form.menuForm input#menuOrder").val(),
+             };
+     $.ajax({
+         url: window.location.protocol + "//" + window.location.host + "/aad/menus/" + subdomain + "/save",
+         type: "post",
+         data: JSON.stringify(menu),
+         dataType: "json",
+         contentType: "application/json;charset=UTF-8",
+         success: function(resp) {
+           console.log(resp);
+           loadmenus();
+         },
+         error: function(resp) {
+           console.log(resp);
+         }
+     });
+    });
+    loadmenus();
+  });
+  </script>
+</body>
+</html>
