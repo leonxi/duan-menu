@@ -3,6 +3,7 @@ package com.xiaoji.duan.aad;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
@@ -199,6 +200,7 @@ public class MainVerticle extends AbstractVerticle {
 		System.out.println(data.encode());
 
     if (null == data.getString("unionId") || "".equals(data.getString("unionId"))) {
+          data.put("unionId", UUID.randomUUID().toString());
           mongodb.save("aad_menus", data, save -> {
             if (save.succeeded()) {
               ctx.response().end("{}");
