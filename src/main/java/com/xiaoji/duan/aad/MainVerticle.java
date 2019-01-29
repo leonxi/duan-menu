@@ -201,6 +201,10 @@ public class MainVerticle extends AbstractVerticle {
 
     if (null == data.getString("unionId") || "".equals(data.getString("unionId"))) {
           data.put("unionId", UUID.randomUUID().toString());
+          data.put("menuId", Integer.valueOf(data.getString("menuId")));
+          data.put("menuParentId", Integer.valueOf(data.getString("menuParentId")));
+          data.put("menuOrder", Integer.valueOf(data.getString("menuOrder")));
+          
           mongodb.save("aad_menus", data, save -> {
             if (save.succeeded()) {
               ctx.response().end("{}");
@@ -215,6 +219,10 @@ public class MainVerticle extends AbstractVerticle {
         if (find.succeeded()) {
           JsonObject one = find.result();
           
+          data.put("menuId", Integer.valueOf(data.getString("menuId")));
+          data.put("menuParentId", Integer.valueOf(data.getString("menuParentId")));
+          data.put("menuOrder", Integer.valueOf(data.getString("menuOrder")));
+
           JsonObject saveObject = null;
           if (one != null) {
             saveObject = one.mergeIn(data);
