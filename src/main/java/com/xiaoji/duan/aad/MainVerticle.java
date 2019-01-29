@@ -198,29 +198,40 @@ public class MainVerticle extends AbstractVerticle {
 		JsonObject data = ctx.getBodyAsJson();
 		System.out.println(data.encode());
 
-		mongodb.findOne("aad_menus", new JsonObject()
-				.put("unionId", data.getString("unionId")), new JsonObject(), find -> {
-			if (find.succeeded()) {
-				JsonObject one = find.result();
-				
-				JsonObject saveObject = null;
-				if (one != null) {
-					saveObject = one.mergeIn(data);
-				} else {
-					saveObject = data;
-				}
-				
-				mongodb.save("aad_menus", saveObject, save -> {
-					if (save.succeeded()) {
-						ctx.response().end("{}");
-					} else {
-						ctx.response().end("{}");
-					}
-				});
-			} else {
-				ctx.response().end("{}");
-			}
-		});
+    if (null == data.getString("unionId") || "".equals(data.getString("unionId"))) {
+          mongodb.save("aad_menus", data, save -> {
+            if (save.succeeded()) {
+              ctx.response().end("{}");
+            } else {
+              ctx.response().end("{}");
+            }
+          });
+    } else {
+    
+      mongodb.findOne("aad_menus", new JsonObject()
+          .put("unionId", data.getString("unionId")), new JsonObject(), find -> {
+        if (find.succeeded()) {
+          JsonObject one = find.result();
+          
+          JsonObject saveObject = null;
+          if (one != null) {
+            saveObject = one.mergeIn(data);
+          } else {
+            saveObject = data;
+          }
+          
+          mongodb.save("aad_menus", saveObject, save -> {
+            if (save.succeeded()) {
+              ctx.response().end("{}");
+            } else {
+              ctx.response().end("{}");
+            }
+          });
+        } else {
+          ctx.response().end("{}");
+        }
+      });
+    }
 	}
 	
 	private void list(RoutingContext ctx) {
