@@ -51,6 +51,9 @@ public class MainVerticle extends AbstractVerticle {
 		StaticHandler staticfiles = StaticHandler.create().setCachingEnabled(false).setWebRoot("static");
 		router.route("/aad/static/*").handler(staticfiles);
 		router.route("/aad").pathRegex("\\/.+\\.json").handler(staticfiles);
+		router.route("/aad").pathRegex("\\/.+\\.js").handler(staticfiles);
+		router.route("/aad").pathRegex("\\/.+\\.css").handler(staticfiles);
+		router.route("/aad").pathRegex("\\/.+\\.map").handler(staticfiles);
 
 		BodyHandler datahandler = BodyHandler.create();
 		router.route("/aad").pathRegex("\\/*").handler(datahandler);
